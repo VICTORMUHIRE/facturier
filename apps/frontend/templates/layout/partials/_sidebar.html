@@ -1,0 +1,28 @@
+<nav id="sidebar">
+    <div class="sidebar-brand p-4 text-center">
+        <h4 class="fw-bold mb-0" style="color: var(--deep-blue); letter-spacing: -1px;">MUHANZI</h4>
+        <span class="small text-muted fw-bold">B.E.T</span>
+    </div>
+
+    <div class="nav flex-column mt-2">
+        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'dashboard' %}">
+            <i class="fa-solid fa-house-chimney"></i> <span>Accueil</span>
+        </a>
+        <a class="nav-link {% if 'members' in request.path %}active{% endif %}" href="#">
+            <i class="fa-solid fa-users-gear"></i> <span>Membres</span>
+        </a>
+        <a class="nav-link {% if 'inventory' in request.path %}active{% endif %}" href="#">
+            <i class="fa-solid fa-layer-group"></i> <span>Inventaire</span>
+        </a>
+        <a class="nav-link" href="#">
+            <i class="fa-solid fa-file-invoice-dollar"></i> <span>Locations</span>
+        </a>
+    </div>
+
+    <div class="mt-auto p-3">
+        
+        <a href="#" data-bs-toggle="modal" data-bs-target="#logoutModal" class="nav-link text-danger">
+            <i class="fa-solid fa-right-from-bracket"></i> <span>Déconnexion</span>
+        </a>
+    </div>
+</nav>

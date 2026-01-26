@@ -1,13 +1,9 @@
+from django.contrib import admin
 from django.urls import path, include
-from django.contrib.auth import views as auth_views
-
 
 urlpatterns = [
-    # API endpoints
-    path('api/auth/login/', auth_views.LoginView.as_view(), name='api-login'),
-    path('api/auth/logout/', auth_views.LogoutView.as_view(), name='api-logout'),
+    path('admin/', admin.site.urls),
     
-    # Frontend routes
-    path('login/', include('apps.frontend.urls')), 
+    # Frontend Routes
+    path('', include('apps.frontend.urls')),
 ]
-

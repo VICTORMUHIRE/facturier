@@ -1,0 +1,25 @@
+<footer class="d-md-none">
+    <a href="{% url 'dashboard' %}" class="{% if request.path == '/' %}active{% endif %}">
+        <i class="fa-solid fa-house"></i>
+        <span style="font-size: 10px;">Home</span>
+    </a>
+    <a href="#" class="{% if 'members' in request.path %}active{% endif %}">
+        <i class="fa-solid fa-users"></i>
+        <span style="font-size: 10px;">Clients</span>
+    </a>
+    
+    <a href="#" class="nav-plus-btn">
+        <div class="plus-icon">
+            <i class="fa-solid fa-plus"></i>
+        </div>
+    </a>
+
+    <a href="#">
+        <i class="fa-solid fa-box-open"></i>
+        <span style="font-size: 10px;">Stock</span>
+    </a>
+    <a href="/admin">
+        <i class="fa-solid fa-gears"></i>
+        <span style="font-size: 10px;">Admin</span>
+    </a>
+</footer>
