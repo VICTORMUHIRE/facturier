@@ -10,3 +10,5 @@ def login_view(request):
 def dashboard_view(request):
     return render(request, 'dashboard/index.html')
 
+def liste_membres(request):
+    return render( request, "modules/members/list.html")

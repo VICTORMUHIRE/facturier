@@ -6,4 +6,5 @@ urlpatterns = [
     
     # Frontend Routes
     path('', include('apps.frontend.urls')),
+    path('members/', include('apps.members.urls')),
 ]
