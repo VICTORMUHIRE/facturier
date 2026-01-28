@@ -1,0 +1,25 @@
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; overflow: hidden;">
+            <div class="modal-header border-0 pt-4 px-4">
+                <h5 class="modal-title" id="logoutModalLabel">Confirmation de déconnexion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-4 py-2">
+                <p class="text-center text-muted">
+                    Êtes-vous sûr de vouloir vous déconnecter</p>
+            </div>
+            <div class="modal-footer border-0 pb-4 px-4">
+                <button type="button" class="btn btn-light fw-bold px-4 py-2" data-bs-dismiss="modal" style="border-radius: 12px; color: var(--text-muted);">
+                    Annuler
+                </button>
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-premium btn-sm fw-bold" style="border-radius: 12px;">
+                        se déconnecter
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

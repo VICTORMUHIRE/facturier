@@ -23,11 +23,11 @@
             {% include 'layout/partials/_bottom_nav.html' %}
         </div>
     {% else %}
-        <div class="auth-wrapper">
-            {% block auth_content %}
+
+        {% block auth_content %}
                 
-            {% endblock %}
-        </div>
+        {% endblock %}
+
     {% endif %}
 
     {% if user.is_authenticated %}

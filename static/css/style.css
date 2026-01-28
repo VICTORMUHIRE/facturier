@@ -17,6 +17,11 @@
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 /* ==========================================================================
    RESETS & BASE
    ========================================================================== */
@@ -258,9 +263,23 @@ footer a.active {
     border-bottom: 1px solid var(--soft-blue);
 }
 
-/* ==========================================================================
-   UTILITAIRES
-   ========================================================================== */
+
 .text-premium { color: var(--deep-blue); }
 .bg-premium { background: var(--premium-gradient); }
 .rounded-xl { border-radius: 16px !important; }
+
+
+
+.modal-backdrop.show {
+    backdrop-filter: blur(4px);
+    background-color: rgba(10, 38, 71, 0.4); /* Overlay teinté bleu nuit */
+}
+
+.modal-content {
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
