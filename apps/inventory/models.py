@@ -32,7 +32,7 @@ class Component(models.Model):
     """Les pièces qui constituent le stock physique"""
     equipment = models.ForeignKey(Equipment, related_name='components', on_delete=models.CASCADE)
     name = models.CharField(max_length=100, verbose_name="Nom de la pièce") 
-    total_quantity = models.PositiveIntegerField(default=0, verbose_name="Quantité Totale en Stock")
+    quantity_required = models.PositiveIntegerField(default=0, verbose_name="Quantité Totale en Stock")
     min_threshold = models.PositiveIntegerField(default=1, verbose_name="Seuil d'alerte")
 
     def __str__(self):

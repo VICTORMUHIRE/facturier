@@ -4,7 +4,7 @@ from ..models import Equipment, EquipmentUnit, Component
 class ComponentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Component
-        fields = ['id', 'name', 'quantity_required']
+        fields = ['id', 'name','equipment', 'quantity_required']
 
 class EquipmentUnitSerializer(serializers.ModelSerializer):
     class Meta:
