@@ -1,0 +1,160 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+    <div>
+        <h2 class="fw-bold text-premium mb-1">Inventaire & Stock</h2>
+        <p class="text-muted small"><i class="fa fa-circle text-success me-1"></i> Suivi en temps réel du parc matériel</p>
+    </div>
+    <button class="btn btn-premium w-100 w-md-auto py-2 px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#addEquipmentModal">
+        <i class="fa fa-plus-circle me-2"></i> Nouvel Équipement
+    </button>
+</div>
+
+<div class="row g-2 mb-4">
+    <div class="col-12 col-md-8">
+        <div class="input-group search-bar-premium">
+            <span class="input-group-text border-0 bg-white shadow-sm"><i class="fa fa-search text-muted"></i></span>
+            <input type="text" id="inventorySearch" class="form-control border-0 shadow-sm" placeholder="Rechercher une machine, un code, une pièce...">
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <select class="form-select border-0 shadow-sm py-2" id="filterCategory">
+            <option value="ALL">Toutes les catégories</option>
+            <option value="SIMPLE">Outils Simples</option>
+            <option value="COMPOUND">Échafaudages / Kits</option>
+        </select>
+    </div>
+</div>
+
+<div class="row g-3" id="equipmentGrid">
+    <div class="col-12 text-center py-5">
+        <div class="spinner-grow text-primary" role="status"></div>
+        <p class="mt-2 text-muted">Synchronisation du stock...</p>
+    </div>
+</div>
+
+{% include 'modules/inventory/partials/_modal_add_equipment.html' %}
+
+
+<script>
+    async function loadInventory() {
+    const grid = document.getElementById('equipmentGrid');
+    
+    try {
+        const response = await fetch('/inventory/api/equipment/');
+        const data = await response.json();
+        
+        grid.innerHTML = ''; // Nettoyage du loader
+
+        if (data.length === 0) {
+            grid.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <img src="/static/img/empty-box.png" style="width: 80px; opacity: 0.5;">
+                    <p class="text-muted mt-3">Aucun matériel enregistré pour le moment.</p>
+                </div>`;
+            return;
+        }
+
+        data.forEach(item => {
+            const totalUnits = item.units.length;
+            const availableUnits = item.available_count;
+            const availabilityRate = totalUnits > 0 ? (availableUnits / totalUnits) * 100 : 0;
+            
+            // Couleur de l'indicateur selon la disponibilité
+            let statusClass = 'bg-success';
+            if (availabilityRate === 0) statusClass = 'bg-danger';
+            else if (availabilityRate < 30) statusClass = 'bg-warning';
+
+            const cardHtml = `
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100 card-inventory" style="border-radius: 20px; transition: transform 0.3s;">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="bg-soft-premium p-3 rounded-4">
+                                    <i class="fa ${item.category === 'COMPOUND' ? 'fa-layer-group' : 'fa-tools'} text-primary fa-lg"></i>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge rounded-pill bg-light text-dark border px-3">${item.category}</span>
+                                    <h5 class="fw-bold text-premium mt-2 mb-0">$${item.daily_price}<small class="text-muted" style="font-size: 0.6em;">/jour</small></h5>
+                                </div>
+                            </div>
+
+                            <h5 class="fw-bold mb-1">${item.name}</h5>
+                            <p class="text-muted small mb-3 text-truncate-2">${item.description || 'Pas de description.'}</p>
+
+                            <div class="bg-light rounded-4 p-3 mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="small fw-bold">Disponibilité</span>
+                                    <span class="small fw-bold ${availableUnits > 0 ? 'text-success' : 'text-danger'}">
+                                        ${availableUnits} / ${totalUnits} Unités
+                                    </span>
+                                </div>
+                                <div class="progress" style="height: 6px; border-radius: 10px;">
+                                    <div class="progress-bar ${statusClass}" role="progressbar" style="width: ${availabilityRate}%"></div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-premium rounded-pill flex-grow-1" onclick="toggleDetails(${item.id})">
+                                    <i class="fa fa-list me-1"></i> Pièces
+                                </button>
+                                <button class="btn btn-sm btn-soft-primary rounded-pill flex-grow-1" onclick="showUnits(${item.id})">
+                                    <i class="fa fa-barcode me-1"></i> Codes
+                                </button>
+                            </div>
+                            
+                            <div id="details-${item.id}" class="mt-3 d-none border-top pt-3">
+                                <h6 class="text-xs fw-bold text-uppercase text-muted mb-2">Composants du kit :</h6>
+                                <ul class="list-unstyled mb-0">
+                                    ${item.components.map(c => `
+                                        <li class="small d-flex justify-content-between">
+                                            <span>${c.name}</span>
+                                            <span class="fw-bold">x${c.quantity_required}</span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            grid.insertAdjacentHTML('beforeend', cardHtml);
+        });
+    } catch (error) {
+        console.error("Erreur de chargement:", error);
+    }
+}
+
+// Initialisation au chargement de la page
+document.addEventListener('DOMContentLoaded', loadInventory);
+
+// Petites fonctions utilitaires pour l'interactivité
+function toggleDetails(id) {
+    const el = document.getElementById(`details-${id}`);
+    el.classList.toggle('d-none');
+}
+
+function showUnits(id) {
+    // On pourrait ouvrir un modal ici pour lister les codes internes (BET-101, etc.)
+    Swal.fire({
+        title: 'Unités en stock',
+        html: `<div id="unit-list-modal">Chargement...</div>`,
+        showConfirmButton: false,
+        didOpen: () => {
+            fetch(`/inventory/api/equipment/${id}/`)
+                .then(r => r.json())
+                .then(data => {
+                    const html = data.units.map(u => `
+                        <div class="d-flex justify-content-between p-2 border-bottom">
+                            <span class="fw-bold">${u.internal_code}</span>
+                            <span class="badge ${u.status === 'AVAILABLE' ? 'bg-success' : 'bg-warning'}">${u.status}</span>
+                        </div>
+                    `).join('');
+                    document.getElementById('unit-list-modal').innerHTML = html || 'Aucune unité créée.';
+                });
+        }
+    });
+}
+</script>
+{% endblock %}

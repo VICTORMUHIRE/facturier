@@ -12,5 +12,8 @@ urlpatterns = [
 
     # membres
     path('members/', views.liste_membres, name='members_list'),
+
+    # inventaire
+    path('inventaire/', views.inventory, name="inventory"),
     
 ]

@@ -14,10 +14,10 @@
         </div>
     </a>
 
-    <a href="#">
-        <i class="fa-solid fa-box-open"></i>
-        <span style="font-size: 10px;">Stock</span>
+    <a class="{% if 'inventory' in request.path %}active{% endif %}" href="{% url 'inventory' %}">
+        <i class="fa-solid fa-layer-group"></i> <span>outils</span>
     </a>
+
     <a href="/admin">
         <i class="fa-solid fa-gears"></i>
         <span style="font-size: 10px;">Admin</span>

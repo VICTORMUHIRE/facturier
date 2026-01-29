@@ -12,3 +12,6 @@ def dashboard_view(request):
 
 def liste_membres(request):
     return render( request, "modules/members/list.html")
+
+def inventory(request):
+    return render( request, "modules/inventory/list.html")

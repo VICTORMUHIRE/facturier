@@ -76,14 +76,17 @@ document.getElementById('addMemberForm').addEventListener('submit', function(e) 
         if (response.ok) {
             Swal.fire({
                 icon: 'success',
-                title: 'Succès',
-                text: 'Membre ajouté avec succès',
-                timer: 2000,
+                title: 'Enregistré !',
+                timer: 3000,
                 showConfirmButton: false
+            }).then(() => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addMemberModal'));
+                modal.hide();
+                document.getElementById('addMemberForm').reset();
+                loadMembers();
+                btn.disabled = false;
+                spinner.classList.add('d-none');
             });
-            location.reload(); // Recharge pour voir le nouveau membre
-        } else {
-            throw result;
         }
     })
     .catch(err => {
