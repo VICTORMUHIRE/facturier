@@ -15,5 +15,8 @@ urlpatterns = [
 
     # inventaire
     path('inventaire/', views.inventory, name="inventory"),
+
+    #locations
+    path('locations/', views.rentals, name='rentals'), 
     
 ]

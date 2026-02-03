@@ -15,3 +15,6 @@ def liste_membres(request):
 
 def inventory(request):
     return render( request, "modules/inventory/list.html")
+
+def rentals(request):
+    return render( request, "modules/rentals/list.html")

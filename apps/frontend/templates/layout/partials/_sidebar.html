@@ -14,7 +14,7 @@
         <a class="nav-link {% if 'inventaire' in request.path %}active{% endif %}" href="{% url 'inventory' %}">
             <i class="fa-solid fa-layer-group"></i> <span>Inventaire</span>
         </a>
-        <a class="nav-link" href="#">
+        <a class="nav-link {% if 'locations' in request.path %}active{% endif %}" href="{% url 'rentals' %}">
             <i class="fa-solid fa-file-invoice-dollar"></i> <span>Locations</span>
         </a>
     </div>

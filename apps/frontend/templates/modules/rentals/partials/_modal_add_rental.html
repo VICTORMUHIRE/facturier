@@ -1,0 +1,129 @@
+<div class="modal fade blur-bg" id="addRentalModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 rounded-5 shadow-lg">
+            <div class="p-4 bg-premium-gradient text-white rounded-top-5">
+                <h4 class="mb-0 fw-bold">Nouveau Contrat de Location</h4>
+                <p class="small opacity-75 mb-0">Calcul automatique des jours hors dimanches</p>
+            </div>
+
+            <form id="addRentalForm" class="p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Client</label>
+                        <select name="member" class="form-select premium-input" id="memberSelect" required>
+                            </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Unité Spécifique (Disponible)</label>
+                        <select name="unit" class="form-select premium-input" id="unitSelect" required>
+                            </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Date de Début</label>
+                        <input type="date" name="date_start" id="date_start" class="form-control premium-input" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Date de Fin Prévue</label>
+                        <input type="date" name="date_end_expected" id="date_end_expected" class="form-control premium-input" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-primary">Prix/Jour ($)</label>
+                        <input type="number" step="0.01" name="daily_rate_at_time" id="daily_rate" class="form-control premium-input border-primary">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-danger">Réduction ($)</label>
+                        <input type="number" step="0.01" name="discount" id="discount" class="form-control premium-input border-danger" value="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Frais Annexes (Trsp/Mont.)</label>
+                        <div class="input-group">
+                            <input type="number" name="transport_fee" id="transport_fee" class="form-control premium-input" placeholder="Trsp" value="0">
+                            <input type="number" name="setup_fee" id="setup_fee" class="form-control premium-input" placeholder="Mont" value="0">
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="p-3 rounded-4 bg-soft-premium border border-primary border-opacity-25 mt-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-xs text-uppercase fw-bold text-muted">Estimation du contrat</span>
+                                    <h5 class="mb-0 text-primary fw-bold" id="live_days">0 Jours ouvrables</h5>
+                                </div>
+                                <div class="text-end">
+                                    <span class="text-xs text-uppercase fw-bold text-muted">Total Final</span>
+                                    <h4 class="mb-0 text-dark fw-black" id="live_total">0.00 $</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 shadow">Valider le Contrat</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Fonction pour calculer les jours hors dimanches en JS
+function getBillableDays(start, end) {
+    let count = 0;
+    let cur = new Date(start);
+    let finish = new Date(end);
+    while (cur <= finish) {
+        if (cur.getDay() !== 0) count++; // 0 = Dimanche
+        cur.setDate(cur.getDate() + 1);
+    }
+    return count;
+}
+
+// Update Live du prix
+function updateEstimate() {
+    const start = document.getElementById('date_start').value;
+    const end = document.getElementById('date_end_expected').value;
+    const rate = parseFloat(document.getElementById('daily_rate').value) || 0;
+    const disc = parseFloat(document.getElementById('discount').value) || 0;
+    const extra = (parseFloat(document.getElementById('transport_fee').value) || 0) + 
+                  (parseFloat(document.getElementById('setup_fee').value) || 0);
+
+    if(start && end) {
+        const days = getBillableDays(start, end);
+        const total = (days * rate) - disc + extra;
+        
+        document.getElementById('live_days').innerText = `${days} Jours ouvrables`;
+        document.getElementById('live_total').innerText = `${total.toFixed(2)} $`;
+    }
+}
+
+// Listeners pour le live-update
+['date_start', 'date_end_expected', 'daily_rate', 'discount', 'transport_fee', 'setup_fee'].forEach(id => {
+    document.getElementById(id).addEventListener('change', updateEstimate);
+    document.getElementById(id).addEventListener('keyup', updateEstimate);
+});
+
+// Soumission du contrat
+document.getElementById('addRentalForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const payload = Object.from_view(formData); // Helper pour convertir form en JSON
+
+    try {
+        const res = await fetch('/rentals/api/rentals/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{csrf_token}}'},
+            body: JSON.stringify(payload)
+        });
+        
+        if(!res.ok) throw await res.json();
+        
+        Swal.fire('Succès', 'Contrat activé et matériel marqué comme RENTED', 'success').then(()=>location.reload());
+    } catch (err) {
+        Swal.fire('Erreur', JSON.stringify(err), 'error');
+    }
+});
+</script>
