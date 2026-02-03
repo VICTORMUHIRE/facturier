@@ -1,26 +1,37 @@
 {% extends 'layout/base.html' %}
 
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-premium">Contrats de Location</h2>
-        <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addRentalModal">
-            <i class="fa fa-file-signature me-2"></i> Nouveau Contrat
+<div class="container-fluid py-4 animate__animated animate__fadeIn">
+    
+    <div class="glass-header rounded-5 p-4 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 shadow-sm border-white border">
+        <div>
+            <h1 class="h3 fw-black text-dark mb-1"><i class="fa fa-file-signature text-primary me-2"></i>Contrats de Location</h1>
+            <p class="text-muted small mb-0">Gestion des engagements et suivi des retours matériel</p>
+        </div>
+        <button class="btn btn-primary rounded-pill px-4 py-2 shadow-lg fw-bold" data-bs-toggle="modal" data-bs-target="#addRentalModal">
+            <i class="fa fa-plus-circle me-2"></i> Nouvelle Location
         </button>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card border-0 rounded-4 shadow-sm p-3 bg-white">
+                <small class="text-muted d-block text-uppercase fw-bold text-xs">En cours</small>
+                <h3 class="fw-black mb-0" id="stat-active">--</h3>
+            </div>
+        </div>
+        </div>
+
+    <div class="card border-0 rounded-5 shadow-sm overflow-hidden bg-white">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
-                        <th class="ps-4">Code / Matériel</th>
-                        <th>Client (Membre)</th>
-                        <th>Période</th>
-                        <th>Jours (Ouvrables)</th>
-                        <th>Total ($)</th>
-                        <th>Statut</th>
-                        <th class="text-end pe-4">Actions</th>
+                        <th class="ps-4 border-0 text-muted small fw-bold">LOCATAIRE</th>
+                        <th class="border-0 text-muted small fw-bold">MATÉRIEL</th>
+                        <th class="border-0 text-muted small fw-bold">PÉRIODE</th>
+                        <th class="border-0 text-muted small fw-bold">FINANCES</th>
+                        <th class="border-0 text-muted small fw-bold text-end pe-4">STATUT</th>
                     </tr>
                 </thead>
                 <tbody id="rentalTableBody">
@@ -31,4 +42,86 @@
 </div>
 
 {% include 'modules/rentals/partials/_modal_add_rental.html' %}
+<script>
+    async function loadRentals() {
+    const tableBody = document.getElementById('rentalTableBody');
+    
+    try {
+        // 1. Récupérer les données (On suppose que ton API renvoie les détails via le Serializer)
+        const response = await fetch('/rentals/api/rentals/');
+        const rentals = await response.json();
+
+        tableBody.innerHTML = ''; // Nettoyage
+
+        if (rentals.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="5" class="text-center py-5 text-muted">Aucun contrat trouvé.</td></tr>';
+            return;
+        }
+
+        rentals.forEach(r => {
+            // Logique de couleur pour le statut
+            const statusMap = {
+                'ACTIVE': { class: 'bg-soft-success text-success', label: 'En cours' },
+                'EXTENDED': { class: 'bg-soft-primary text-primary', label: 'Prolongé' },
+                'FINISHED': { class: 'bg-soft-secondary text-muted', label: 'Terminé' },
+                'CANCELLED': { class: 'bg-soft-danger text-danger', label: 'Annulé' }
+            };
+            const status = statusMap[r.status] || { class: 'bg-light', label: r.status };
+
+            const row = `
+                <tr class="border-bottom">
+                    <td class="ps-4 py-3">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-sm me-3 bg-soft-premium rounded-circle d-flex align-items-center justify-content-center" style="width:40px; height:40px;">
+                                <span class="fw-bold text-primary">${r.member_name ? r.member_name[0] : 'M'}</span>
+                            </div>
+                            <div>
+                                <div class="fw-bold text-dark">${r.member_name || 'Membre #' + r.member}</div>
+                                <div class="text-xs text-muted">ID: M-00${r.member}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="fw-bold text-dark">${r.unit_code || 'Unité #' + r.unit}</div>
+                        <div class="text-xs text-muted">Modèle: ${r.equipment_name || 'Equipement'}</div>
+                    </td>
+                    <td>
+                        <div class="small"><i class="fa fa-calendar-alt me-1 text-muted"></i> Du ${new Date(r.date_start).toLocaleDateString()}</div>
+                        <div class="small"><i class="fa fa-arrow-right me-1 text-muted"></i> Au ${new Date(r.date_end_expected).toLocaleDateString()}</div>
+                        <div class="badge bg-light text-dark text-xs mt-1">${r.billable_days} jours facturés</div>
+                    </td>
+                    <td>
+                        <div class="fw-bold text-dark">$${r.total_cost}</div>
+                        <div class="text-xs ${r.amount_due > 0 ? 'text-danger fw-bold' : 'text-success'}">
+                            ${r.amount_due > 0 ? 'Reste: $' + r.amount_due : 'Payé intégralement'}
+                        </div>
+                    </td>
+                    <td class="text-end pe-4">
+                        <span class="badge ${status.class} rounded-pill px-3 py-2">${status.label}</span>
+                        <div class="dropdown d-inline-block ms-2">
+                            <button class="btn btn-sm btn-light rounded-circle" data-bs-toggle="dropdown">
+                                <i class="fa fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-4">
+                                <li><a class="dropdown-item small" href="#"><i class="fa fa-eye me-2"></i>Détails</a></li>
+                                <li><a class="dropdown-item small" href="#"><i class="fa fa-print me-2"></i>Imprimer</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item small text-primary" href="#" onclick="extendRental(${r.id})"><i class="fa fa-clock me-2"></i>Prolonger</a></li>
+                                <li><a class="dropdown-item small text-danger" href="#"><i class="fa fa-times-circle me-2"></i>Terminer</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            tableBody.insertAdjacentHTML('beforeend', row);
+        });
+
+    } catch (error) {
+        console.error("Erreur chargement locations:", error);
+    }
+}
+
+// Lancer au chargement
+document.addEventListener('DOMContentLoaded', loadRentals);
+</script>
 {% endblock %}

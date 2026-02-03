@@ -1,129 +1,126 @@
-<div class="modal fade blur-bg" id="addRentalModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="addRentalModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0 rounded-5 shadow-lg">
-            <div class="p-4 bg-premium-gradient text-white rounded-top-5">
-                <h4 class="mb-0 fw-bold">Nouveau Contrat de Location</h4>
-                <p class="small opacity-75 mb-0">Calcul automatique des jours hors dimanches</p>
+        <div class="modal-content border-0 rounded-5 shadow-lg overflow-hidden">
+            <div class="bg-primary p-4 text-white">
+                <h4 class="fw-bold mb-0">Nouveau Contrat</h4>
+                <p class="small opacity-75 mb-0">Configurez les dates et les conditions financières</p>
             </div>
 
-            <form id="addRentalForm" class="p-4">
+            <form id="addRentalForm" class="p-4 bg-light">
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label small fw-bold">Client</label>
-                        <select name="member" class="form-select premium-input" id="memberSelect" required>
-                            </select>
+                        <label class="form-label small fw-bold">Membre / Locataire</label>
+                        <select name="member" class="form-select premium-select" id="memberSelect" required></select>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label small fw-bold">Unité Spécifique (Disponible)</label>
-                        <select name="unit" class="form-select premium-input" id="unitSelect" required>
-                            </select>
+                        <label class="form-label small fw-bold">Unité de Matériel (Code)</label>
+                        <select name="unit" class="form-select premium-select" id="unitSelect" required></select>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">Date de Début</label>
-                        <input type="date" name="date_start" id="date_start" class="form-control premium-input" required>
+                        <input type="date" name="date_start" class="form-control premium-input" id="startDate" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small fw-bold">Date de Fin Prévue</label>
-                        <input type="date" name="date_end_expected" id="date_end_expected" class="form-control premium-input" required>
+                        <input type="date" name="date_end_expected" class="form-control premium-input" id="endDate" required>
+                        <div class="form-text text-xs text-primary"><i class="fa fa-info-circle"></i> Dimanches automatiquement exclus du calcul.</div>
                     </div>
 
+                    <hr class="my-3 opacity-10">
+
                     <div class="col-md-4">
-                        <label class="form-label small fw-bold text-primary">Prix/Jour ($)</label>
-                        <input type="number" step="0.01" name="daily_rate_at_time" id="daily_rate" class="form-control premium-input border-primary">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Réduction ($)</label>
+                        <input type="number" name="discount" class="form-control border-0 shadow-sm" value="0" id="discountInput">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label small fw-bold text-danger">Réduction ($)</label>
-                        <input type="number" step="0.01" name="discount" id="discount" class="form-control premium-input border-danger" value="0">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Transport ($)</label>
+                        <input type="number" name="transport_fee" class="form-control border-0 shadow-sm" value="0" id="transportInput">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label small fw-bold">Frais Annexes (Trsp/Mont.)</label>
-                        <div class="input-group">
-                            <input type="number" name="transport_fee" id="transport_fee" class="form-control premium-input" placeholder="Trsp" value="0">
-                            <input type="number" name="setup_fee" id="setup_fee" class="form-control premium-input" placeholder="Mont" value="0">
-                        </div>
+                        <label class="form-label small fw-bold text-muted text-uppercase">Montage ($)</label>
+                        <input type="number" name="setup_fee" class="form-control border-0 shadow-sm" value="0" id="setupInput">
                     </div>
 
-                    <div class="col-12">
-                        <div class="p-3 rounded-4 bg-soft-premium border border-primary border-opacity-25 mt-2">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="text-xs text-uppercase fw-bold text-muted">Estimation du contrat</span>
-                                    <h5 class="mb-0 text-primary fw-bold" id="live_days">0 Jours ouvrables</h5>
-                                </div>
-                                <div class="text-end">
-                                    <span class="text-xs text-uppercase fw-bold text-muted">Total Final</span>
-                                    <h4 class="mb-0 text-dark fw-black" id="live_total">0.00 $</h4>
-                                </div>
+                    <div class="col-12 mt-4">
+                        <div class="price-summary-card p-4 rounded-5 text-white d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+                            <div>
+                                <span class="d-block small opacity-75">Jours facturables</span>
+                                <h4 class="fw-bold mb-0" id="displayDays">0 jours</h4>
+                            </div>
+                            <div class="text-end">
+                                <span class="d-block small opacity-75">Total Final</span>
+                                <h2 class="fw-black mb-0" id="displayTotal">$ 0.00</h2>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                <div class="mt-4 d-flex justify-content-end gap-2">
                     <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary rounded-pill px-5 shadow">Valider le Contrat</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 shadow">Finaliser & Imprimer</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
+<style>
+    .premium-input, .premium-select { border: 2px solid #fff; border-radius: 15px; padding: 12px; shadow: 0 4px 6px rgba(0,0,0,0.02); }
+    .premium-input:focus { border-color: var(--bs-primary); background: #fff; }
+    .price-summary-card { box-shadow: 0 15px 30px rgba(15, 23, 42, 0.2); }
+</style>
+
 <script>
-    // Fonction pour calculer les jours hors dimanches en JS
-function getBillableDays(start, end) {
-    let count = 0;
-    let cur = new Date(start);
-    let finish = new Date(end);
-    while (cur <= finish) {
-        if (cur.getDay() !== 0) count++; // 0 = Dimanche
-        cur.setDate(cur.getDate() + 1);
+    // Variable globale pour stocker le prix journalier de l'unité choisie
+let selectedDailyPrice = 0;
+
+async function refreshEstimate() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const discount = parseFloat(document.getElementById('discountInput').value) || 0;
+    const transport = parseFloat(document.getElementById('transportInput').value) || 0;
+    const setup = parseFloat(document.getElementById('setupInput').value) || 0;
+
+    if (!startDate || !endDate || selectedDailyPrice === 0) return;
+
+    // Appel à notre API de simulation
+    const res = await fetch('/rentals/api/rentals/estimate_price/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{csrf_token}}'},
+        body: JSON.stringify({
+            date_start: startDate,
+            date_end_expected: endDate,
+            daily_rate: selectedDailyPrice,
+            discount: discount
+        })
+    });
+    
+    const data = await res.json();
+    if (data.billable_days !== undefined) {
+        document.getElementById('displayDays').innerText = `${data.billable_days} jours`;
+        const totalFinal = data.estimated_total + transport + setup;
+        document.getElementById('displayTotal').innerText = `$ ${totalFinal.toFixed(2)}`;
     }
-    return count;
 }
 
-// Update Live du prix
-function updateEstimate() {
-    const start = document.getElementById('date_start').value;
-    const end = document.getElementById('date_end_expected').value;
-    const rate = parseFloat(document.getElementById('daily_rate').value) || 0;
-    const disc = parseFloat(document.getElementById('discount').value) || 0;
-    const extra = (parseFloat(document.getElementById('transport_fee').value) || 0) + 
-                  (parseFloat(document.getElementById('setup_fee').value) || 0);
-
-    if(start && end) {
-        const days = getBillableDays(start, end);
-        const total = (days * rate) - disc + extra;
-        
-        document.getElementById('live_days').innerText = `${days} Jours ouvrables`;
-        document.getElementById('live_total').innerText = `${total.toFixed(2)} $`;
-    }
-}
-
-// Listeners pour le live-update
-['date_start', 'date_end_expected', 'daily_rate', 'discount', 'transport_fee', 'setup_fee'].forEach(id => {
-    document.getElementById(id).addEventListener('change', updateEstimate);
-    document.getElementById(id).addEventListener('keyup', updateEstimate);
+// Écouteurs pour le calcul dynamique
+document.querySelectorAll('#startDate, #endDate, #discountInput, #transportInput, #setupInput').forEach(el => {
+    el.addEventListener('change', refreshEstimate);
 });
 
-// Soumission du contrat
-document.getElementById('addRentalForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const payload = Object.from_view(formData); // Helper pour convertir form en JSON
-
-    try {
-        const res = await fetch('/rentals/api/rentals/', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{csrf_token}}'},
-            body: JSON.stringify(payload)
-        });
-        
-        if(!res.ok) throw await res.json();
-        
-        Swal.fire('Succès', 'Contrat activé et matériel marqué comme RENTED', 'success').then(()=>location.reload());
-    } catch (err) {
-        Swal.fire('Erreur', JSON.stringify(err), 'error');
-    }
+// Lorsqu'on choisit un matériel, on récupère son prix journalier via son modèle parent
+document.getElementById('unitSelect').addEventListener('change', async function() {
+    const unitId = this.value;
+    // On suppose que l'API /api/units/unitId renvoie aussi l'objet equipment avec son daily_price
+    const res = await fetch(`/inventory/api/units/${unitId}/`);
+    const unitData = await res.json();
+    
+    // On doit faire un fetch sur l'équipement pour avoir le prix
+    const equipRes = await fetch(`/inventory/api/equipment/${unitData.equipment}/`);
+    const equipData = await equipRes.json();
+    
+    selectedDailyPrice = equipData.daily_price;
+    refreshEstimate();
 });
 </script>
