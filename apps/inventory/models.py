@@ -3,10 +3,11 @@ from django.db import models
 class Equipment(models.Model):
     EQUIP_TYPE = [('SIMPLE', 'Outil Simple'), ('COMPOUND', 'Échafaudage / Kit')]
     
-    name = models.CharField(max_length=150, verbose_name="Nom de l'équipement")
+    name = models.CharField(max_length=150,unique=True, verbose_name="Nom de l'équipement")
     category = models.CharField(max_length=10, choices=EQUIP_TYPE, default='SIMPLE')
     daily_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Prix journalier ($)")
     image = models.ImageField(upload_to='equipment/', blank=True, null=True)
+    ref_code = models.CharField(max_length=20, unique=True, null=True, blank=True, verbose_name="Référence Modèle (ex: BET350)")
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -37,3 +38,5 @@ class Component(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.equipment.name}"
+    class Meta:
+        unique_together = ('equipment', 'name')

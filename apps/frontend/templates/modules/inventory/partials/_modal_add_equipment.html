@@ -1,6 +1,5 @@
-
 <style>
-        .premium-input {
+    .premium-input {
         border: 2px solid #f1f3f5;
         border-radius: 14px;
         padding: 12px 18px;
@@ -10,95 +9,102 @@
     .premium-input:focus {
         border-color: #0d6efd;
         background-color: #fff;
-        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
     }
     .border-dashed {
         border: 2px dashed #dee2e6;
-        background-color: rgba(13, 110, 253, 0.02);
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+    .bg-premium-gradient {
+        background: linear-gradient(135deg, #0d6efd 0%, #002d72 100%);
     }
 </style>
 
-<div class="modal fade blur-bg" id="addEquipmentModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered ">
-        <div class="modal-content border-0 overflow-hidden" style="border-radius: 28px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+<div class="modal fade" id="addEquipmentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 28px; overflow: hidden;">
             
-            <div class="p-3" >
+            <div class="p-4 text-white bg-premium-gradient">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h4 class="mb-1 fw-bold">Configuration Matériel</h4>
-                        <p class="small opacity-75 mb-0">Enregistrement dans le parc MUHANZI FUNDI</p>
+                        <p class="small opacity-75 mb-0">Enregistrement atomique - MUHANZI FUNDI</p>
                     </div>
-                    <button type="button" class="btn-close " data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
             </div>
 
             <form id="addEquipmentForm" class="p-4">
-                <div class="row g-4">
-                    <div class="col-md-7">
-                        <label class="form-label fw-bold text-dark small">Désignation du Modèle</label>
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold small">Désignation du Modèle</label>
                         <input type="text" name="name" class="form-control premium-input" placeholder="Ex: Échafaudage Alu Section A" required>
                     </div>
-                    <div class="col-md-5">
-                        <label class="form-label fw-bold text-dark small">Prix Journalier ($)</label>
-                        <input type="number" step="0.01" name="daily_price" class="form-control premium-input font-monospace" placeholder="0.00" required>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small">Code Réf (SKU)</label>
+                        <input type="text" name="ref_code" class="form-control premium-input" placeholder="Ex: ECH-ALU-01" required>
                     </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark small">Catégorie</label>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small">Prix Jour ($)</label>
+                        <input type="number" step="0.01" name="daily_price" class="form-control premium-input" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small">Catégorie</label>
                         <select name="category" class="form-select premium-input" id="categoryToggle">
-                            <option value="SIMPLE">Outil Simple (Unité unique)</option>
-                            <option value="COMPOUND">Échafaudage / Kit (Multi-composants)</option>
+                            <option value="SIMPLE">Outil Simple</option>
+                            <option value="COMPOUND">Échafaudage / Kit</option>
                         </select>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold text-primary small">Nombre d'unités en stock</label>
-                        <input type="number" name="num_units" class="form-control premium-input border-primary" value="1" min="1">
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-primary small">Unités à générer</label>
+                        <input type="number" name="num_units" class="form-control premium-input border-primary" value="1" min="1" required>
                     </div>
 
-                    <div id="componentSection" class="col-12 d-none">
+                    <div id="componentSection" class="col-12 d-none mt-3">
                         <div class="p-3 rounded-4 border-dashed animate__animated animate__fadeIn">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h6 class="fw-bold text-dark mb-0"><i class="fa fa-cubes me-2 text-primary"></i>Liste des pièces du Kit</h6>
-                                <button type="button" class="btn btn-sm btn-primary rounded-pill px-3" id="addRow">
+                                <h6 class="fw-bold mb-0 text-dark"><i class="fa fa-cubes me-2 text-primary"></i>Composition du Kit</h6>
+                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" id="addRow">
                                     <i class="fa fa-plus me-1"></i> Ajouter une pièce
                                 </button>
                             </div>
-                            
-                            <div id="compList">
-                                </div>
+                            <div id="compList"></div>
                         </div>
                     </div>
                 </div>
 
                 <div class="mt-5 d-flex justify-content-end gap-2">
-                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-lg fw-bold" id="submitBtn">
-                        <span id="loader" class="spinner-border spinner-border-sm d-none me-2"></span> Confirmer l'ajout
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 shadow" id="submitBtn">
+                        <span id="loader" class="spinner-border spinner-border-sm d-none me-2"></span> Créer l'équipement
                     </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     const categoryToggle = document.getElementById('categoryToggle');
     const componentSection = document.getElementById('componentSection');
     const compList = document.getElementById('compList');
     const addRowBtn = document.getElementById('addRow');
+    const form = document.getElementById('addEquipmentForm');
 
-    // 1. Affichage conditionnel de la section Composants
+    // Toggle Affichage Composants
     categoryToggle.addEventListener('change', function() {
         if (this.value === 'COMPOUND') {
             componentSection.classList.remove('d-none');
-            if (compList.children.length === 0) addComponentRow(); // Ajoute une ligne si vide
+            if (compList.children.length === 0) addComponentRow();
         } else {
             componentSection.classList.add('d-none');
+            compList.innerHTML = ''; 
         }
     });
 
-    // 2. Fonction pour ajouter une ligne de composant
     function addComponentRow() {
         const row = document.createElement('div');
         row.className = 'row g-2 mb-2 animate__animated animate__slideInLeft';
@@ -107,113 +113,94 @@
                 <input type="text" name="comp_name[]" class="form-control premium-input py-2" placeholder="Nom de la pièce" required>
             </div>
             <div class="col-3">
-                <input type="number" name="comp_qty[]" class="form-control premium-input py-2 text-center" value="1" required>
+                <input type="number" name="comp_qty[]" class="form-control premium-input py-2 text-center" value="1" min="1" required>
             </div>
             <div class="col-2 d-flex align-items-center justify-content-center">
-                <button type="button" class="btn btn-outline-danger border-0 rounded-circle remove-row">
-                    <i class="fa fa-trash"></i>
-                </button>
+                <button type="button" class="btn btn-link text-danger remove-row"><i class="fa fa-trash"></i></button>
             </div>
         `;
         compList.appendChild(row);
-
-        // Event listener pour la suppression
-        row.querySelector('.remove-row').addEventListener('click', function() {
-            row.classList.replace('animate__slideInLeft', 'animate__fadeOutRight');
-            setTimeout(() => row.remove(), 300);
-        });
+        row.querySelector('.remove-row').addEventListener('click', () => row.remove());
     }
 
     addRowBtn.addEventListener('click', addComponentRow);
 
-    // 3. Soumission du formulaire (Cascade API)
-    document.getElementById('addEquipmentForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const btn = document.getElementById('submitBtn');
-    const loader = document.getElementById('loader');
-    
-    btn.disabled = true;
-    loader.classList.remove('d-none');
+    // SOUMISSION ATOMIQUE
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const loader = document.getElementById('loader');
+        
+        btn.disabled = true;
+        loader.classList.remove('d-none');
 
-    const formData = new FormData(this);
+        const formData = new FormData(this);
+        
+        // 1. Construction du Payload Atomique
+        const payload = {
+            name: formData.get('name'),
+            ref_code: formData.get('ref_code'),
+            daily_price: formData.get('daily_price'),
+            category: formData.get('category'),
+            components: [],
+            units: []
+        };
 
-    // Fonction utilitaire pour vérifier les réponses
-    const checkResponse = async (response, message) => {
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error(message, errorData);
-            throw new Error(`${message}: ${JSON.stringify(errorData)}`);
-        }
-        return response.json();
-    };
-
-    try {
-        // 1. Création du Modèle
-        const equipRes = await fetch('/inventory/api/equipment/', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{csrf_token}}'},
-            body: JSON.stringify({
-                name: formData.get('name'),
-                daily_price: formData.get('daily_price'),
-                category: formData.get('category')
-            })
-        });
-        const equipment = await checkResponse(equipRes, "Erreur Modèle");
-
-        // 2. Création des Composants
-        if (formData.get('category') === 'COMPOUND') {
+        // 2. Collecte des composants
+        if (payload.category === 'COMPOUND') {
             const names = formData.getAll('comp_name[]');
             const qtys = formData.getAll('comp_qty[]');
-            for(let i=0; i<names.length; i++) {
-                const compRes = await fetch('/inventory/api/components/', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{csrf_token}}'},
-                    body: JSON.stringify({
-                        equipment: equipment.id,
-                        name: names[i],
-                        quantity_required: parseInt(qtys[i])
-                    })
+            names.forEach((val, i) => {
+                payload.components.push({
+                    name: val,
+                    quantity_required: parseInt(qtys[i])
                 });
-                await checkResponse(compRes, `Erreur Composant: ${names[i]}`);
-            }
-        }
-
-        // 3. Génération des Unités
-        const numUnits = parseInt(formData.get('num_units'));
-        const prefix = equipment.name.substring(0,3).toUpperCase();
-        for(let i=1; i<=numUnits; i++) {
-            const unitRes = await fetch('/inventory/api/units/', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{csrf_token}}'},
-                body: JSON.stringify({
-                    equipment: equipment.id,
-                    internal_code: `${prefix}-${Math.floor(100 + Math.random() * 900)}-${i}`,
-                    status: 'AVAILABLE'
-                })
             });
-            await checkResponse(unitRes, `Erreur Unité ${i}`);
         }
 
-        // Si on arrive ici, tout est OK
-        Swal.fire({
-            icon: 'success',
-            title: 'Parc mis à jour !',
-            text: 'Modèle, pièces et unités créés avec succès.',
-            confirmButtonColor: '#0d6efd'
-        }).then(() => location.reload());
+        // 3. Génération des Unités (côté client pour l'atomicité)
+        const numUnits = parseInt(formData.get('num_units')) || 1;
+        const prefix = payload.ref_code.substring(0, 5).toUpperCase();
+        for (let i = 1; i <= numUnits; i++) {
+            payload.units.push({
+                internal_code: `${prefix}-${Math.floor(1000 + Math.random() * 9000)}-${i}`,
+                status: 'AVAILABLE'
+            });
+        }
 
-    } catch (err) {
-        // En cas d'erreur, on affiche l'alerte d'erreur et on réactive le bouton
-        console.error("STOPPED:", err.message);
-        Swal.fire({
-            icon: 'error',
-            title: 'Échec de création',
-            text: "Détails: " + err.message,
-            confirmButtonColor: '#d33'
-        });
-        btn.disabled = false;
-        loader.classList.add('d-none');
-    }
-});
+        try {
+            const response = await fetch('/inventory/api/equipment/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(JSON.stringify(errorData));
+            }
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Parc créé !',
+                text: 'L\'équipement, les pièces et les unités ont été générés atomiquement.',
+                confirmButtonColor: '#0d6efd'
+            }).then(() => location.reload());
+
+        } catch (err) {
+            console.error(err);
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur de création',
+                text: 'Vérifiez si le Code Réf ou le Nom n\'existe pas déjà.',
+                footer: `<small>${err.message}</small>`
+            });
+            btn.disabled = false;
+            loader.classList.add('d-none');
+        }
+    });
 });
 </script>
