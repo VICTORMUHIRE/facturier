@@ -66,7 +66,7 @@
 <script>
     // Logique AJAX pour charger les membres
     function loadMembers() {
-        fetch('/members/api/list/')
+        fetch('/members/api/members/')
             .then(res => res.json())
             .then(data => {
                 const tbody = document.getElementById('member-table-body');

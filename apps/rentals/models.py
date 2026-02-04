@@ -13,14 +13,10 @@ class Rental(models.Model):
     
     manager = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     member = models.ForeignKey('members.Member', on_delete=models.CASCADE)
-    
-    # On lie à l'unité précise (BET-001) et non au modèle général
     unit = models.ForeignKey('inventory.EquipmentUnit', on_delete=models.PROTECT, related_name='rentals')
     
     date_start = models.DateField() 
     date_end_expected = models.DateField() 
-    
-    # Pour la prolongation : on stocke la date de fin réelle si elle change
     actual_end_date = models.DateField(null=True, blank=True)
     
     # Finances

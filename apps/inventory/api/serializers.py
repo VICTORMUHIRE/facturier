@@ -8,9 +8,11 @@ class ComponentSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'quantity_required']
         
 class EquipmentUnitSerializer(serializers.ModelSerializer):
+    equipment_name = serializers.ReadOnlyField(source='equipment.name')
+    equipment_price = serializers.ReadOnlyField(source='equipment.daily_price')
     class Meta:
         model = EquipmentUnit
-        fields = ['id', 'internal_code', 'status']
+        fields = ['id', 'internal_code', 'status', 'equipment_name', 'equipment_price']
 
 class EquipmentSerializer(serializers.ModelSerializer):
     components = ComponentSerializer(many=True, required=False)

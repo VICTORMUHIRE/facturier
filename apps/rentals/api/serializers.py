@@ -1,9 +1,7 @@
 from rest_framework import serializers
-from ..models import Rental, Payment
-from apps.inventory.models import EquipmentUnit
+from ..models import Rental
 
 class RentalSerializer(serializers.ModelSerializer):
-    # On affiche les détails mais on reçoit des IDs pour l'écriture
     billable_days = serializers.ReadOnlyField(source='total_days')
     total_cost = serializers.ReadOnlyField(source='final_total')
     amount_due = serializers.ReadOnlyField()
@@ -11,7 +9,7 @@ class RentalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rental
         fields = [
-            'id', 'manager', 'member', 'unit', 'date_start', 
+            'pk', 'manager', 'member', 'unit', 'date_start', 
             'date_end_expected', 'daily_rate_at_time', 'discount', 
             'transport_fee', 'setup_fee', 'status', 'comment',
             'billable_days', 'total_cost', 'amount_due'
