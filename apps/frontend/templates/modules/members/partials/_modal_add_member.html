@@ -1,0 +1,99 @@
+<div class="modal fade" id="addMemberModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 px-4 pt-4">
+                <h5 class="fw-bold text-premium">Nouveau Membre</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addMemberForm">
+                <div class="modal-body px-4">
+                    <div id="formErrors" class="alert alert-danger d-none" style="border-radius: 12px;"></div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Nom Complet ou Raison Sociale</label>
+                        <input type="text" name="full_name" class="form-control" placeholder="Ex: Jean Paul" required style="border-radius: 10px;">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">Type de Client</label>
+                            <select name="client_type" class="form-select" style="border-radius: 10px;">
+                                <option value="PARTICULIER">Particulier</option>
+                                <option value="ENTREPRISE">Entreprise</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">Téléphone</label>
+                            <input type="text" name="phone" class="form-control" placeholder="+243..." required style="border-radius: 10px;">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">N° Pièce d'Identité (Optionnel)</label>
+                        <input type="text" name="id_card_number" class="form-control" placeholder="CNI, Passeport..." style="border-radius: 10px;">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Adresse</label>
+                        <textarea name="address" class="form-control" rows="2" style="border-radius: 10px;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 px-4 pb-4">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 10px;">Annuler</button>
+                    <button type="submit" id="btnSaveMember" class="btn btn-premium px-4" style="border-radius: 10px;">
+                        <span id="saveSpinner" class="spinner-border spinner-border-sm d-none me-2"></span> Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('addMemberForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnSaveMember');
+    const spinner = document.getElementById('saveSpinner');
+    const errorDiv = document.getElementById('formErrors');
+    
+    btn.disabled = true;
+    spinner.classList.remove('d-none');
+    errorDiv.classList.add('d-none');
+
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+
+    fetch('/members/api/list/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(async response => {
+        const result = await response.json();
+        if (response.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Enregistré !',
+                timer: 3000,
+                showConfirmButton: false
+            }).then(() => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addMemberModal'));
+                modal.hide();
+                document.getElementById('addMemberForm').reset();
+                loadMembers();
+                btn.disabled = false;
+                spinner.classList.add('d-none');
+            });
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        spinner.classList.add('d-none');
+        errorDiv.innerText = "Erreur : " + JSON.stringify(err);
+        errorDiv.classList.remove('d-none');
+    });
+});
+</script>

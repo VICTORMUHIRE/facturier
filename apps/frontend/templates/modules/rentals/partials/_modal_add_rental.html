@@ -1,0 +1,386 @@
+<style>
+    
+:root {
+    --dark-sidebar: #0f172a;
+    --accent-warning: #f59e0b;
+    --glass-white: rgba(255, 255, 255, 0.95);
+}
+
+.bg-dark-premium { background-color: var(--dark-sidebar); }
+.text-warning-premium { color: var(--accent-warning); }
+
+/* Champ de recherche stylisé */
+.search-group {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 15px;
+    padding: 5px;
+    transition: all 0.3s;
+}
+.search-group:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+/* Résultats de recherche flottants */
+.search-dropdown {
+    position: absolute;
+    z-index: 1060;
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+}
+
+.search-item {
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.search-item:hover { background: #eff6ff; }
+
+/* Ticket de caisse (Aperçu) */
+.divider-white {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    margin: 20px 0;
+}
+
+.ls-widest { letter-spacing: 0.15em; }
+
+
+.bg-primary-soft { background-color: rgba(13, 110, 253, 0.1); }
+.icon-circle { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+.bg-dark-premium { background: #0f172a; border-left: 1px solid rgba(255,255,255,0.1); }
+.divider-white { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); margin: 1.5rem 0; }
+.label-premium { font-size: 0.75rem; font-weight: 700; text-transform: uppercase ; letter-spacing: 0.05em; color: #64748b; margin-bottom: 0.5rem; display: block; }
+.search-item:hover { background-color: #f8fafc; cursor: pointer; }
+.border-white-10 { border-color: rgba(255,255,255,0.1) !important; }
+.border-white-20 { border-color: rgba(255,255,255,0.2) !important; }
+</style>
+
+
+<div class="modal fade" id="addRentalModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen-md-down modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 shadow-2xl rounded-5 overflow-hidden">
+            
+            <div class="row g-0">
+                <div class="col-lg-7 p-4 p-md-5 bg-white">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="icon-circle bg-primary-soft me-3">
+                            <i class="fa fa-file-contract text-primary"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-black mb-0">Configuration du Contrat</h3>
+                            <p class="text-muted small">Suivez les étapes pour générer la location</p>
+                        </div>
+                    </div>
+
+                    <form id="addRentalForm">
+                        <div class="form-section mb-4">
+                            <label class="label-premium">Locataire</label>
+                            <div class="input-group search-group">
+                                <span class="input-group-text"><i class="fa fa-search"></i></span>
+                                <input type="text" id="memberSearch" class="form-control" placeholder="Nom ou Téléphone...">
+                                <button type="button" class="btn btn-outline-primary" id="btnNewMember">
+                                    <i class="fa fa-user-plus"></i> Nouveau
+                                </button>
+                            </div>
+                            <div id="memberSearchResults" class="search-dropdown d-none shadow-lg"></div>
+                            <input type="hidden" name="member" id="selectedMemberId">
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <label class="label-premium">Unité de Matériel</label>
+                                <select name="unit" id="unitSelect" class="form-select premium-select" required></select>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="label-premium">Date de début</label>
+                                <input type="date" name="date_start" id="startDate" class="form-control premium-input" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="label-premium">Date de fin</label>
+                                <input type="date" name="date_end_expected" id="endDate" class="form-control premium-input" required>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="label-premium text-danger">Réduction ($)</label>
+                                <input type="number" name="discount" id="discountInput" class="form-control" value="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="label-premium">Transport ($)</label>
+                                <input type="number" name="transport_fee" id="transportInput" class="form-control" value="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="label-premium">Montage ($)</label>
+                                <input type="number" name="setup_fee" id="setupInput" class="form-control" value="0">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-lg-5 bg-dark-premium text-white p-4 p-md-5 d-flex flex-column">
+                    <div class="flex-grow-1">
+                        <div class="text-center mb-4">
+                            <h5 class="text-uppercase ls-widest opacity-50 small">Aperçu du Contrat</h5>
+                            <div class="divider-white"></div>
+                        </div>
+
+                        <div id="contractPreview">
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="opacity-60">Locataire:</span>
+                                <span id="prevMember" class="fw-bold">Non défini</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="opacity-60">Outil:</span>
+                                <span id="prevUnit" class="fw-bold text-end">Aucun</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3 border-bottom border-white-10 pb-2">
+                                <span class="opacity-60">Période:</span>
+                                <span id="prevDays" class="badge bg-primary">0 jours ouvrables</span>
+                            </div>
+
+                            <div class="mt-4">
+                                <div class="d-flex justify-content-between small opacity-80 mb-1">
+                                    <span>Prix journalier</span>
+                                    <span id="prevRate">$ 0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between small opacity-80 mb-1">
+                                    <span>Total Brut</span>
+                                    <span id="prevGross">$ 0.00</span>
+                                </div>
+                                <div id="discountLine" class="d-flex justify-content-between small text-danger mb-1 d-none">
+                                    <span>Réduction</span>
+                                    <span id="prevDiscount">-$ 0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto pt-4 border-top border-white-20">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="mb-0">Total</h2>
+                            <h1 class="fw-black text-warning mb-0" id="prevTotal">$ 0.00</h1>
+                        </div>
+                        <button type="submit" form="addRentalForm" class="btn btn-warning w-100 rounded-pill fw-bold shadow-lg">
+                            <i class="fa fa-print me-2"></i> GÉNÉRER & IMPRIMER
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    let selectedDailyPrice = 0;
+    let selectedUnitCode = "";
+
+    // --- INITIALISATION ---
+    loadAvailableUnits();
+
+    // --- 1. RECHERCHE DE MEMBRE ---
+    const memberSearchInput = document.getElementById('memberSearch');
+    const resultsDiv = document.getElementById('memberSearchResults');
+
+    memberSearchInput.addEventListener('input', async function(e) {
+        const query = e.target.value;
+        if (query.length < 2) {
+            resultsDiv.classList.add('d-none');
+            return;
+        }
+
+        try {
+            const res = await fetch(`/members/api/members/search/?q=${query}`);
+            const members = await res.json();
+            
+            resultsDiv.innerHTML = members.map(m => `
+                <div class="search-item p-3 border-bottom list-group-item-action" 
+                     data-id="${m.id}" data-name="${m.full_name}">
+                    <strong>${m.full_name}</strong><br>
+                    <small class="text-muted"><i class="fa fa-phone me-1"></i>${m.phone}</small>
+                </div>
+            `).join('');
+            resultsDiv.classList.remove('d-none');
+
+            // Event delegation pour la sélection
+            resultsDiv.querySelectorAll('.search-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    selectMember(item.dataset.id, item.dataset.name);
+                });
+            });
+        } catch (err) { console.error("Erreur recherche membre:", err); }
+    });
+
+    function selectMember(id, name) {
+        document.getElementById('selectedMemberId').value = id;
+        memberSearchInput.value = name;
+        document.getElementById('prevMember').innerText = name;
+        resultsDiv.classList.add('d-none');
+    }
+
+    // --- 2. SÉLECTION MATÉRIEL & PRIX ---
+    async function loadAvailableUnits() {
+        const unitSelect = document.getElementById('unitSelect');
+        unitSelect.innerHTML = '<option value="">Chargement du matériel...</option>';
+        
+        try {
+            const res = await fetch('/inventory/api/units/');
+            const units = await res.json();
+            const available = units.filter(u => u.status === 'AVAILABLE');
+            
+            unitSelect.innerHTML = '<option value="">Sélectionnez l\'unité à louer</option>' + 
+                available.map(u => `
+                    <option value="${u.id}" data-price="${u.equipment_price}" data-code="${u.internal_code}">
+                        ${u.equipment_name} ( ${u.internal_code} )
+                    </option>
+                `).join('');
+        } catch (e) { unitSelect.innerHTML = '<option>Erreur de chargement</option>'; }
+    }
+
+    document.getElementById('unitSelect').addEventListener('change', function() {
+        const opt = this.options[this.selectedIndex];
+        if (opt.value) {
+            selectedDailyPrice = parseFloat(opt.dataset.price);
+            selectedUnitCode = opt.dataset.code;
+            document.getElementById('prevUnit').innerText = selectedUnitCode;
+            updateTicket();
+        }
+    });
+
+    // --- 3. CALCULS LIVE (TICKET) ---
+    async function updateTicket() {
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        const disc = parseFloat(document.getElementById('discountInput').value) || 0;
+        const trans = parseFloat(document.getElementById('transportInput').value) || 0;
+        const setup = parseFloat(document.getElementById('setupInput').value) || 0;
+
+        if (start && end && selectedDailyPrice > 0) {
+            try {
+                const res = await fetch('/rentals/api/rentals/estimate_price/', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{csrf_token}}'},
+                    body: JSON.stringify({
+                        date_start: start,
+                        date_end_expected: end,
+                        daily_rate: selectedDailyPrice,
+                        discount: disc
+                    })
+                });
+                const data = await res.json();
+
+                // UI Update
+                document.getElementById('prevDays').innerText = `${data.billable_days} jours ouvrables`;
+                document.getElementById('prevRate').innerText = `$ ${selectedDailyPrice.toFixed(2)}`;
+                document.getElementById('prevGross').innerText = `$ ${(data.billable_days * selectedDailyPrice).toFixed(2)}`;
+                
+                const finalTotal = data.estimated_total + trans + setup;
+                document.getElementById('prevTotal').innerText = `$ ${finalTotal.toFixed(2)}`;
+                
+                const dLine = document.getElementById('discountLine');
+                dLine.classList.toggle('d-none', disc === 0);
+                document.getElementById('prevDiscount').innerText = `-$ ${disc.toFixed(2)}`;
+            } catch (e) { console.error("Calcul impossible"); }
+        }
+    }
+
+    // Listeners pour les calculs
+    ['startDate', 'endDate', 'discountInput', 'transportInput', 'setupInput'].forEach(id => {
+        document.getElementById(id).addEventListener('change', updateTicket);
+    });
+
+    // --- 4. SOUMISSION & PDF ---
+    document.getElementById('addRentalForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Validation basique
+        if (!document.getElementById('selectedMemberId').value) {
+            return Swal.fire('Attention', 'Veuillez sélectionner un membre existant ou en créer un.', 'warning');
+        }
+
+        const payload = Object.fromEntries(new FormData(this).entries());
+        payload.daily_rate_at_time = selectedDailyPrice;
+
+        Swal.showLoading();
+
+        try {
+            const res = await fetch('/rentals/api/rentals/', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{csrf_token}}'},
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                const rentalData = await res.json();
+                Swal.fire({
+                    title: 'Contrat Enregistré !',
+                    text: 'Le matériel est maintenant marqué comme loué.',
+                    icon: 'success',
+                    showCancelButton: true,
+                    confirmButtonText: '<i class="fa fa-file-pdf"></i> Imprimer le contrat',
+                    cancelButtonText: 'Fermer'
+                }).then((result) => {
+                    if (result.isConfirmed) generatePDF(rentalData);
+                    else location.reload();
+                });
+            } else {
+                const errors = await res.json();
+                Swal.fire('Erreur', 'Vérifiez la disponibilité de l\'unité ou les dates.', 'error');
+            }
+        } catch (e) { Swal.fire('Erreur', 'Serveur injoignable', 'error'); }
+    });
+
+    function generatePDF(data) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Design du Header PDF
+    doc.setFontSize(22);
+    doc.setTextColor(15, 23, 42);
+    doc.text("MUHANZI FUNDI - CONTRAT DE LOCATION", 20, 30);
+    
+    doc.setFontSize(10);
+    doc.text(`N° Contrat : RENT-${data.id}-${new Date().getFullYear()}`, 20, 40);
+    doc.text(`Date d'émission : ${new Date().toLocaleDateString()}`, 20, 45);
+
+    // Corps du contrat
+    const details = [
+        ["Désignation", "Détails"],
+        ["Locataire", document.getElementById('memberSearch').value],
+        ["Matériel", selectedUnitCode],
+        ["Période", `${data.date_start} au ${data.date_end_expected}`],
+        ["Jours Facturés", `${data.billable_days} jours (hors dimanches)`],
+        ["Prix Journalier", `$ ${selectedDailyPrice}`],
+        ["Frais Annexes", `$ ${parseFloat(data.transport_fee) + parseFloat(data.setup_fee)}`],
+        ["Réduction", `-$ ${data.discount}`],
+        ["TOTAL À PAYER", `$ ${data.total_cost}`]
+    ];
+
+    doc.autoTable({
+        startY: 60,
+        head: [details[0]],
+        body: details.slice(1),
+        theme: 'striped',
+        headStyles: { fillStyle: '#0d6efd' }
+    });
+
+    // Pied de page (Signatures)
+    const finalY = doc.lastAutoTable.finalY + 30;
+    doc.text("Signature Locataire", 20, finalY);
+    doc.text("Signature Gestionnaire", 140, finalY);
+
+    // Téléchargement
+    doc.save(`Contrat_MUHANZI_${data.id}.pdf`);
+    location.reload();
+}
+});
+</script>

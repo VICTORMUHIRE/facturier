@@ -1,0 +1,480 @@
+/* ==========================================================================
+   VARIABLES PREMIUM (CHARTE MUHANZI FUNDI)
+   ========================================================================== */
+:root {
+    --deep-blue: #0A2647;      /* Bleu Nuit - Principal */
+    --royal-blue: #144272;     /* Bleu Royal - Hover */
+    --accent-blue: #2C74B3;    /* Bleu Accent - Focus/Boutons */
+    --soft-blue: #E1E9F4;      /* Bleu Très Clair - Borders/Bg */
+    --premium-gradient: linear-gradient(135deg, #0A2647 0%, #144272 100%);
+    --bg-light: #F8FAFC;
+    --white: #ffffff;
+    --text-main: #334155;
+    --text-muted: #64748b;
+    --success: #10b981;
+    --danger: #ef4444;
+    --sidebar-width: 260px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+/* ==========================================================================
+   RESETS & BASE
+   ========================================================================== */
+body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    overflow-x: hidden;
+    margin: 0;
+}
+
+/* ==========================================================================
+   STRUCTURE DU LAYOUT (GRID)
+   ========================================================================== */
+.layout {
+    display: grid;
+    min-height: 100vh;
+    grid-template-columns: var(--sidebar-width) 1fr;
+    grid-template-areas: "sidebar main";
+}
+@media (max-width: 768px) {
+    .layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        /* On force la première ligne (header) à être minimale */
+        grid-template-rows: min-content 1fr min-content; 
+        grid-template-areas: 
+            "header"
+            "main"
+            "footer";
+    }
+
+    header {
+        grid-area: header;
+        height: 60px; /* Hauteur fixe pour un look d'application mobile */
+        padding: 0 1.2rem !important; /* On réduit le padding haut/bas */
+        display: flex;
+        align-items: center;
+        background: #fff;
+        border-bottom: 1px solid var(--soft-blue);
+    }
+}
+
+
+/* ==========================================================================
+   SIDEBAR DESKTOP (PREMIUM)
+   ========================================================================== */
+#sidebar {
+    grid-area: sidebar;
+    background: var(--white);
+    border-right: 1px solid var(--soft-blue);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    z-index: 100;
+}
+
+
+#sidebar .nav-link {
+    color: var(--text-muted);
+    margin: 2px 0;
+    padding: 8px 15px;
+    font-size: .95rem;
+    /* La bordure gauche transparente par défaut pour éviter le saut au hover */
+    border-left: solid 4px transparent; 
+    transition: all .25s ease;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+#sidebar .nav-link i { 
+    margin-right: .75rem; 
+    width: 20px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+/* État Hover */
+#sidebar .nav-link:hover {
+    background: var(--soft-blue);
+    color: var(--deep-blue);
+}
+
+/* ÉTAT ACTIVE (Comme votre version mais en Deep Blue) */
+#sidebar .nav-link.active {
+    background: linear-gradient(90deg, var(--soft-blue), #fff);
+    border-left: solid 4px var(--deep-blue); /* Barre colorée à gauche */
+    font-weight: 700;
+    color: var(--deep-blue);
+}
+
+/* ==========================================================================
+   MAIN CONTENT
+   ========================================================================== */
+main {
+    grid-area: main;
+    padding: 2rem;
+    background-color: var(--bg-light);
+}
+
+@media (max-width: 768px) {
+    main {
+        padding: 1.5rem;
+        padding-bottom: 100px; /* Espace pour la barre du bas */
+    }
+    #sidebar {
+        display: none !important; /* Force la disparition sur mobile */
+    }
+}
+
+
+/* ==========================================================================
+   MOBILE HEADER & FOOTER (BOTTOM NAV)
+   ========================================================================== */
+/* Header Mobile */
+.header {
+    grid-area: header;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1.5rem;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--soft-blue);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* Footer (Bottom App Bar) */
+footer {
+    grid-area: footer;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    border-top: 1px solid var(--soft-blue);
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 75px;
+    padding-bottom: env(safe-area-inset-bottom);
+    z-index: 1000;
+}
+
+footer a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: var(--transition);
+}
+
+footer a span {
+    font-size: 0.65rem;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+footer a.active {
+    color: var(--deep-blue);
+}
+
+/* Bouton Central "Plus" Mobile */
+.nav-plus-btn .plus-icon {
+    background: var(--premium-gradient);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-top: -45px; /* L'effet qui fait sortir le bouton */
+    border: 5px solid var(--white);
+    box-shadow: 0 8px 25px rgba(10, 38, 71, 0.3);
+    transition: var(--transition);
+}
+
+.nav-plus-btn:active .plus-icon {
+    transform: scale(0.9);
+}
+
+/* ==========================================================================
+   ELEMENTS CARD & UI PREMIUM
+   ========================================================================== */
+.card-premium {
+    background: var(--white);
+    border: 1px solid var(--soft-blue);
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    transition: var(--transition);
+}
+
+.card-premium:hover {
+    box-shadow: 0 12px 30px rgba(10, 38, 71, 0.08);
+}
+
+.btn-premium {
+    background: var(--premium-gradient);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(10, 38, 71, 0.25);
+    color: var(--white);
+}
+
+/* Custom Table pour la liste des membres */
+.premium-table thead {
+    background-color: var(--soft-blue);
+    color: var(--deep-blue);
+}
+
+.premium-table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05rem;
+    padding: 1rem;
+    border: none;
+}
+
+.premium-table td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--soft-blue);
+}
+
+
+.text-premium { color: var(--deep-blue); }
+.bg-premium { background: var(--premium-gradient); }
+.rounded-xl { border-radius: 16px !important; }
+
+
+
+.modal-backdrop.show {
+    backdrop-filter: blur(4px);
+    background-color: rgba(10, 38, 71, 0.4); /* Overlay teinté bleu nuit */
+}
+
+.modal-content {
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+
+.bg-soft-premium {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+.bg-soft-primary {
+    background-color: #f0f4ff;
+    color: #0d6efd;
+    border: none;
+}
+
+.card-inventory:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+}
+
+.text-xs {
+    font-size: 0.75rem;
+}
+
+.bg-premium-gradient {
+    background: linear-gradient(135deg, #0d6efd 0%, #003399 100%);
+}
+
+.modern-input {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    padding: 12px 20px;
+}
+
+.modern-input:focus {
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+}
+
+.premium-input {
+    border: 2px solid #f1f3f5;
+    border-radius: 14px;
+    padding: 12px 18px;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+}
+.premium-input:focus {
+    border-color: #0d6efd;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+}
+.border-dashed {
+    border: 2px dashed #dee2e6;
+    background-color: rgba(13, 110, 253, 0.02);
+}
+
+
+:root {
+    --premium-blue: #0d6efd;
+    --premium-dark: #001f3f;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+}
+
+.fw-black { font-weight: 900; }
+.ls-tight { letter-spacing: -1px; }
+
+.glass-header {
+    background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.4) 100%);
+    backdrop-filter: blur(15px);
+}
+
+.icon-box-premium {
+    width: 70px; height: 70px;
+    background: var(--premium-blue);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 22px;
+    box-shadow: 0 10px 20px rgba(13, 110, 253, 0.3);
+}
+
+.search-container-premium {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    padding: 5px;
+}
+.search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #adb5bd; }
+.search-container-premium input {
+    border: none; padding: 15px 15px 15px 50px;
+    border-radius: 18px; font-size: 0.95rem; outline: none;
+}
+
+.filter-chip {
+    background: white; border: 2px solid transparent; padding: 10px 25px;
+    border-radius: 50px; white-space: nowrap; font-weight: 600;
+    transition: all 0.3s; color: #6c757d;
+}
+.filter-chip.active { background: var(--premium-dark); color: white; }
+
+/* Styles pour les Cartes (Injectées par JS) */
+.card-premium-inventory {
+    border-radius: 30px;
+    background: white;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+}
+.card-premium-inventory:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.12) !important;
+}
+
+.status-ring {
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: bold;
+}
+
+
+/* Conteneur de l'unité (Pill) */
+.unit-pill {
+    background: #ffffff;
+    transition: all 0.3s ease;
+    border: 1px solid #f1f3f5 !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.unit-pill:hover {
+    border-color: #0d6efd !important;
+    background: #f8fbff;
+    transform: scale(1.02);
+}
+
+/* Le point indicateur */
+.pulse-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    position: relative;
+}
+
+/* Animation de pulsation (L'effet "Breath") */
+.pulse-dot::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: inherit;
+    border-radius: 50%;
+    z-index: 1;
+    animation: pulse-ring 1.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+}
+
+/* Couleurs dynamiques basées sur Bootstrap */
+.pulse-dot.bg-success {
+    background-color: #22c55e;
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+}
+
+.pulse-dot.bg-warning {
+    background-color: #f59e0b;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+}
+
+/* Définition de l'animation */
+@keyframes pulse-ring {
+    0% {
+        transform: scale(0.7);
+        opacity: 0.8;
+    }
+    80%, 100% {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+}
+
+.premium-input {
+    border: 2px solid #f1f3f5;
+    border-radius: 14px;
+    padding: 12px 18px;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+}
+.premium-input:focus {
+    border-color: #0d6efd;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+}
+.border-dashed {
+    border: 2px dashed #dee2e6;
+    background-color: rgba(13, 110, 253, 0.05);
+}
+.bg-premium-gradient {
+    background: linear-gradient(135deg, #0d6efd 0%, #002d72 100%);
+}
+

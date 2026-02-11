@@ -1,0 +1,98 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Gestion des Membres - MUHANZI FUNDI{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold text-premium mb-0">Répertoire des Membres</h3>
+        <p class="text-muted small">Gérez vos clients particuliers et entreprises</p>
+    </div>
+    <button class="btn btn-premium" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+        <i class="fa fa-plus me-2"></i> Nouveau Membre
+    </button>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card card-premium p-3 border-0 shadow-sm">
+            <div class="d-flex align-items-center">
+                <div class="bg-soft-blue p-3 rounded-circle me-3">
+                    <i class="fa fa-users text-primary"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0 fw-bold" id="total-members">0</h5>
+                    <small class="text-muted">Total Membres</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card card-premium border-0 shadow-sm">
+    <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-white rounded-top">
+        <div class="input-group w-50">
+            <span class="input-group-text bg-light border-0"><i class="fa fa-search text-muted"></i></span>
+            <input type="text" id="memberSearch" class="form-control bg-light border-0" placeholder="Rechercher par nom ou téléphone...">
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table premium-table mb-0">
+            <thead>
+                <tr>
+                    <th>Membre</th>
+                    <th>Type</th>
+                    <th>Téléphone</th>
+                    <th>Date d'adhésion</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="member-table-body">
+                <tr>
+                    <td colspan="5" class="text-center py-5">
+                        <div class="spinner-border text-primary"></div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% include 'modules/members/partials/_modal_add_member.html' %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Logique AJAX pour charger les membres
+    function loadMembers() {
+        fetch('/members/api/members/')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById('member-table-body');
+                document.getElementById('total-members').innerText = data.length;
+                tbody.innerHTML = '';
+                
+                data.forEach(member => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-premium">${member.full_name}</div>
+                                <small class="text-muted">${member.id_card_number || 'Pas de CNI'}</small>
+                            </td>
+                            <td><span class="badge bg-light text-dark border">${member.client_type}</span></td>
+                            <td><i class="fa fa-phone me-2 text-muted small"></i>${member.phone}</td>
+                            <td>${new Date(member.created_at).toLocaleDateString()}</td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-light border"><i class="fa fa-eye"></i></button>
+                                <button class="btn btn-sm btn-light border text-danger"><i class="fa fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadMembers);
+</script>
+{% endblock %}
